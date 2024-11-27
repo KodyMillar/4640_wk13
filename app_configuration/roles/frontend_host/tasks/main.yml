@@ -1,0 +1,62 @@
+---
+hosts: frontend_host
+become: yes
+- name: update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: install caddy
+  ansible.builtin.package:
+    name: caddy
+    state: latest
+
+- name: ensure caddy user exists
+  ansible.builtin.user:
+    name: caddy
+    state: present
+
+- name: ensure caddy group exists
+  ansible.builtin.group:
+    name: caddy
+    state: present
+
+- name: create webserver directory
+  ansible.builtin.file:
+    path: /var/www/html
+    state: directory
+    mode: '0755'
+    owner: caddy
+    group: caddy
+
+- name: copy index.html to directory
+  ansible.builtin.copy:
+    src: index.html
+    dest: /var/www/html/index.html
+    owner: caddy
+    group: caddy
+    mode: '0624'
+
+- name: copy client.js to directory
+  ansible.builtin.copy:
+    src: client.js
+    dest: /var/www/html/client.js
+    owner: caddy
+    group: caddy
+    mode: '0624'
+
+- name: configure web client using config
+  ansible.builtin.template:
+    src: config.js.j2
+    dest: /var/www/html/config.js
+    owner: caddy
+    group: caddy
+    mode: '0624'
+
+- name: configure caddy using caddyfile.j2 template
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    owner: root
+    group: caddy
+    mode: '0644'
+  notify: restart-caddy enable-caddy
