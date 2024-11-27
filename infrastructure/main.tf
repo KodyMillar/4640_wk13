@@ -35,39 +35,7 @@ resource "aws_instance" "instance2" {
 }
 
 
-resource "aws_vpc_dhcp_options" "main" {
-  domain_name         = "cit.local"
-  domain_name_servers = ["AmazonProvidedDNS"]
-}
 
-resource "aws_vpc_dhcp_options_association" "main" {
-  vpc_id          = aws_vpc.main.id
-  dhcp_options_id = aws_vpc_dhcp_options.main.id
-}
-
-resource "aws_route53_zone" "main" {
-  name = "cit.local"
-  vpc {
-    vpc_id = aws_vpc.main.id
-  }
-}
-
-resource "aws_route53_record" "instance1" {
-  zone_id = aws_route53_zone.main.zone_id
-  name    = "${aws_instance.instance1.tags.Name}.cit.local"
-  type    = "A"
-  ttl     = "300"
-  records = [aws_instance.instance1.private_ip]
-}
-
-resource "aws_route53_record" "instance2" {
-  zone_id = aws_route53_zone.main.zone_id
-  name    = "${aws_instance.instance2.tags.Name}.cit.local"
-  type    = "A"
-  ttl     = "300"
-  records = [aws_instance.instance2.private_ip]
-
-}
 
 module "ssh_key" {
   source       = "git::https://gitlab.com/acit_4640_library/tf_modules/aws_ssh_key_pair.git"
