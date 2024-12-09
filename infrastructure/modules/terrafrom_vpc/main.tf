@@ -39,6 +39,7 @@ resource "aws_route_table_association" "routetable2" {
   subnet_id      = aws_subnet.lab13_private.id
   route_table_id = aws_route_table.main.id
 }
+
 resource "aws_security_group" "lab13_public" {
   name        = "sg_lab13_public"
   description = "Allow ssh access"
@@ -139,7 +140,7 @@ resource "aws_vpc_security_group_ingress_rule" "private_in" {
 }
 
 # Allow all traffic from VPC
-resource "aws_vpc_security_group_ingress_rule" "inside" {
+resource "aws_vpc_security_group_ingress_rule" "inside2" {
   security_group_id = aws_security_group.lab13_private.id
   ip_protocol       = "-1"
   cidr_ipv4         = aws_vpc.main.cidr_block

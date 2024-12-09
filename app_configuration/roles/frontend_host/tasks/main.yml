@@ -1,11 +1,13 @@
 ---
-hosts: frontend_host
-become: yes
+# hosts: frontend_host
+# become: yes
 - name: update apt cache
+  become: yes
   ansible.builtin.apt:
     update_cache: yes
 
 - name: install caddy
+  become: yes
   ansible.builtin.package:
     name: caddy
     state: latest
@@ -21,6 +23,7 @@ become: yes
     state: present
 
 - name: create webserver directory
+  become: yes
   ansible.builtin.file:
     path: /var/www/html
     state: directory
@@ -29,6 +32,7 @@ become: yes
     group: caddy
 
 - name: copy index.html to directory
+  become: yes
   ansible.builtin.copy:
     src: index.html
     dest: /var/www/html/index.html
@@ -37,6 +41,7 @@ become: yes
     mode: '0624'
 
 - name: copy client.js to directory
+  become: yes
   ansible.builtin.copy:
     src: client.js
     dest: /var/www/html/client.js
@@ -45,6 +50,7 @@ become: yes
     mode: '0624'
 
 - name: configure web client using config
+  become: yes
   ansible.builtin.template:
     src: config.js.j2
     dest: /var/www/html/config.js
@@ -53,10 +59,18 @@ become: yes
     mode: '0624'
 
 - name: configure caddy using caddyfile.j2 template
+  become: yes
+  ansible.builtin.debug:
+    var: hostvars
+
+- name: configure caddy using caddyfile.j2 template
+  become: yes
   ansible.builtin.template:
     src: Caddyfile.j2
     dest: /etc/caddy/Caddyfile
     owner: root
     group: caddy
     mode: '0644'
-  notify: restart-caddy enable-caddy
+  notify: 
+    - restart-caddy 
+    - enable-caddy
