@@ -60,11 +60,6 @@
 
 - name: configure caddy using caddyfile.j2 template
   become: yes
-  ansible.builtin.debug:
-    var: hostvars
-
-- name: configure caddy using caddyfile.j2 template
-  become: yes
   ansible.builtin.template:
     src: Caddyfile.j2
     dest: /etc/caddy/Caddyfile
